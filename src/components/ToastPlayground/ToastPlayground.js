@@ -11,26 +11,36 @@ const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 function ToastPlayground() {
   const [radioOption, setRadioOption] = React.useState("notice");
   const [message, setMessage] = React.useState("");
-  // const [showToast, setShowToast] = React.useState(false);
+
   const [showToast, setShowToast] = React.useState([
     {
+      id: crypto.randomUUID(),
       message: "Something went wrong!",
       variant: "error",
     },
     {
+      id: crypto.randomUUID(),
       message: "17 photos uploaded",
       variant: "success",
     },
   ]);
 
-  const handleCloseToast = () => {
-    setShowToast(false);
+  const handleNewToast = (event) => {
+    event.preventDefault();
+    setShowToast([
+      ...showToast,
+      {
+        id: crypto.randomUUID(),
+        message: message,
+        variant: radioOption,
+      },
+    ]);
     setMessage("");
+    setRadioOption("notice");
   };
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    setShowToast(true);
+  const handleCloseToast = (id) => {
+    setShowToast(showToast.filter((toast) => toast.id !== id));
   };
 
   return (
@@ -38,13 +48,12 @@ function ToastPlayground() {
       <header>
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
-        {showToast && (
-          <ToastShelf variant={radioOption} handleCloseToast={handleCloseToast}>
-            {message}
-          </ToastShelf>
-        )}
+
+        <ToastShelf showToast={showToast} handleCloseToast={handleCloseToast}>
+          {message}
+        </ToastShelf>
       </header>
-      <form onSubmit={handleFormSubmit}>
+      <form onSubmit={handleNewToast}>
         <div className={styles.controlsWrapper}>
           <div className={styles.row}>
             <label
